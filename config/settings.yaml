@@ -1,0 +1,70 @@
+detection:
+  model: "yolov8n.pt"
+  confidence_threshold: 0.5
+  min_duration: 2.0
+  # Set to -1 to auto-select the first available camera at startup
+  camera_index: 0
+  roi: null
+  # Suppress phones that are likely just reflections on monitors or iPads
+  filter_screens: true
+  screen_overlap_threshold: 0.4   # IoU fraction — lower = stricter suppression
+  max_phone_area_fraction: 0.20   # Bboxes > 20% of frame area treated as tablets
+
+# Camera calibration — leave a value as null to keep the driver default.
+# Run `python main.py --list-cameras` to see available camera indices.
+camera_calibration:
+  enabled: true
+  # Resolution (null = driver default)
+  width: null
+  height: null
+  # Frame rate (null = driver default)
+  fps: null
+  # Brightness/contrast: driver-specific scale, usually -64..64 or 0..255
+  brightness: null
+  contrast: null
+  # Exposure: set a negative integer for manual exposure (e.g. -6).
+  # null = auto-exposure
+  exposure: null
+
+scare:
+  enabled: true
+  volume: 1.0
+  cooldown_seconds: 15
+  escalation_enabled: true
+  escalation_delay: 10
+  sound_folder: "sounds/"
+
+ai_coach:
+  enabled: true
+  ollama_model: "llama3"
+  ollama_url: "http://localhost:11434"
+  tts_enabled: true
+  tts_engine: "pyttsx3"
+  fallback_roasts: "config/roasts.yaml"
+
+hardware:
+  serial_enabled: false
+  serial_port: "COM3"
+  baud_rate: 9600
+  # WiFi trigger — set wifi_enabled: true and point arduino_url at the ESP32's IP.
+  # The server must be running and reachable on the same network.
+  # Example: arduino_url: "http://192.168.1.42"
+  wifi_enabled: true
+  arduino_url: "http://192.168.1.101"
+
+calendar:
+  enabled: true
+  calendar_id: "primary"
+  refresh_interval: 300
+
+web:
+  host: "0.0.0.0"
+  port: 5000
+
+# Process and browser-tab distraction monitor
+process_monitor:
+  enabled: true
+  poll_interval: 2.0       # seconds between scans
+  check_web:  true          # detect Instagram/TikTok/etc. in browser tab titles
+  check_apps: true          # detect Steam/Discord/games by process name
+  min_duration: 3.0         # seconds before the scare system fires
