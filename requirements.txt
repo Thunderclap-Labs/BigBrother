@@ -1,0 +1,35 @@
+# BigBrother — Core Dependencies
+
+# Object detection
+ultralytics>=8.0.0
+opencv-python>=4.8.0
+
+# Web framework
+Flask>=3.0.0
+
+# Audio
+pygame>=2.5.0
+
+# Text-to-speech
+pyttsx3>=2.90
+
+# LLM (Ollama HTTP client)
+requests>=2.31.0
+
+# Google Calendar
+google-api-python-client>=2.100.0
+google-auth-oauthlib>=1.1.0
+google-auth-httplib2>=0.1.1
+
+# Configuration
+PyYAML>=6.0
+
+# Optional: better TTS
+# edge-tts>=6.1.0
+
+# Optional: hardware serial
+# pyserial>=3.5
+
+# Optional: CUDA support (uncomment for GPU acceleration)
+# torch>=2.0.0
+# torchvision>=0.15.0
