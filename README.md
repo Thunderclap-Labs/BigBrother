@@ -124,3 +124,5 @@ This is a student project built for fun. PRs welcome!
 ## License
 
 MIT
+
+- Completed SCRUM-17: Add face-visibility tracking to phone detector
