@@ -128,3 +128,5 @@ MIT
 - Completed SCRUM-17: Add face-visibility tracking to phone detector
 
 - Completed SCRUM-18: Add screen-overlap filter to suppress false positives
+
+- Completed SCRUM-21: Figure out how to pull trigger of gun
