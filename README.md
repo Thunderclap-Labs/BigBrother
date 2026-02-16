@@ -126,3 +126,5 @@ This is a student project built for fun. PRs welcome!
 MIT
 
 - Completed SCRUM-17: Add face-visibility tracking to phone detector
+
+- Completed SCRUM-18: Add screen-overlap filter to suppress false positives
