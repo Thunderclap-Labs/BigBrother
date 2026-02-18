@@ -132,3 +132,5 @@ MIT
 - Completed SCRUM-21: Figure out how to pull trigger of gun
 
 - Completed SCRUM-23: WiFi Integration with gun
+
+- Completed SCRUM-24: Phone Integration with ESP32
