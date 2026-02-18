@@ -130,3 +130,5 @@ MIT
 - Completed SCRUM-18: Add screen-overlap filter to suppress false positives
 
 - Completed SCRUM-21: Figure out how to pull trigger of gun
+
+- Completed SCRUM-23: WiFi Integration with gun
