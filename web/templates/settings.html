@@ -1,0 +1,220 @@
+{% extends "base.html" %}
+{% block title %}BigBrother — Settings{% endblock %}
+
+{% block content %}
+<div class="settings-page">
+    <h1 class="page-title">Settings</h1>
+
+    <form id="settings-form" class="settings-form">
+
+        <!-- Camera -->
+        <div class="settings-section">
+            <h2 class="section-title">Camera</h2>
+            <div class="setting-row">
+                <label for="camera-select">Active Camera</label>
+                <select id="camera-select" style="background:var(--bg-input);border:1px solid var(--border);color:var(--fg);padding:6px 10px;font-family:var(--font);font-size:0.84rem;border-radius:var(--radius);flex:1;max-width:320px;outline:none;cursor:pointer;">
+                    <option value="">Scanning…</option>
+                </select>
+            </div>
+            <div class="setting-row">
+                <label for="filter-screens">Suppress Monitors / Screens</label>
+                <label class="toggle">
+                    <input type="checkbox" id="filter-screens" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Detection -->
+        <div class="settings-section">
+            <h2 class="section-title">Detection</h2>
+            <div class="setting-row">
+                <label for="confidence">Confidence Threshold</label>
+                <input type="range" id="confidence" min="0.1" max="0.95" step="0.05" value="0.5">
+                <span id="confidence-val" class="setting-value">0.50</span>
+            </div>
+            <div class="setting-row">
+                <label for="min-duration">Min Duration (seconds)</label>
+                <input type="number" id="min-duration" min="0.5" max="10" step="0.5" value="2.0">
+            </div>
+        </div>
+
+        <!-- Scare System -->
+        <div class="settings-section">
+            <h2 class="section-title">Scare System</h2>
+            <div class="setting-row">
+                <label for="volume">Volume</label>
+                <input type="range" id="volume" min="0" max="1" step="0.1" value="1.0">
+                <span id="volume-val" class="setting-value">100%</span>
+            </div>
+            <div class="setting-row">
+                <label for="cooldown">Cooldown (seconds)</label>
+                <input type="number" id="cooldown" min="5" max="120" step="5" value="15">
+            </div>
+            <div class="setting-row">
+                <label for="escalation">Escalation</label>
+                <label class="toggle">
+                    <input type="checkbox" id="escalation" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Process / Browser Monitor -->
+        <div class="settings-section">
+            <h2 class="section-title">Process Monitor</h2>
+            <div class="setting-row">
+                <label for="pm-enabled">Enable Process Monitor</label>
+                <label class="toggle">
+                    <input type="checkbox" id="pm-enabled" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="setting-row">
+                <label for="pm-web">Detect Browser Tabs</label>
+                <label class="toggle">
+                    <input type="checkbox" id="pm-web" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="setting-row">
+                <label for="pm-apps">Detect Distracting Apps</label>
+                <label class="toggle">
+                    <input type="checkbox" id="pm-apps" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <!-- AI Coach -->
+        <div class="settings-section">
+            <h2 class="section-title">AI Coach</h2>
+            <div class="setting-row">
+                <label for="tts-enabled">Text-to-Speech</label>
+                <label class="toggle">
+                    <input type="checkbox" id="tts-enabled" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="setting-row">
+                <label for="ollama-model">Ollama Model</label>
+                <input type="text" id="ollama-model" value="llama3" placeholder="llama3, mistral, phi3...">
+            </div>
+        </div>
+
+        <!-- Hardware -->
+        <div class="settings-section">
+            <h2 class="section-title">Hardware (Optional)</h2>
+            <div class="setting-row">
+                <label for="serial-enabled">Serial Gun</label>
+                <label class="toggle">
+                    <input type="checkbox" id="serial-enabled">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="setting-row">
+                <label for="serial-port">Serial Port</label>
+                <input type="text" id="serial-port" value="COM3" placeholder="COM3, /dev/ttyUSB0...">
+            </div>
+        </div>
+
+        <button type="submit" class="btn-save">Save Settings</button>
+        <div id="save-feedback" class="save-feedback" style="display:none;">Settings saved!</div>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const confSlider = document.getElementById('confidence');
+const confVal = document.getElementById('confidence-val');
+confSlider.addEventListener('input', () => confVal.textContent = parseFloat(confSlider.value).toFixed(2));
+
+const volSlider = document.getElementById('volume');
+const volVal = document.getElementById('volume-val');
+volSlider.addEventListener('input', () => volVal.textContent = Math.round(volSlider.value * 100) + '%');
+
+// ── Camera list ──────────────────────────────────────────────────
+const camSelect = document.getElementById('camera-select');
+fetch('/api/cameras')
+    .then(r => r.json())
+    .then(data => {
+        camSelect.innerHTML = '';
+        if (!data.cameras || data.cameras.length === 0) {
+            camSelect.innerHTML = '<option value="0">Camera 0 (default)</option>';
+            return;
+        }
+        data.cameras.forEach(cam => {
+            const opt = document.createElement('option');
+            opt.value = cam.index;
+            const res = cam.width ? ` — ${cam.width}×${cam.height} @${cam.fps}fps` : '';
+            opt.textContent = `Camera ${cam.index}${res}`;
+            if (cam.index === data.current) opt.selected = true;
+            camSelect.appendChild(opt);
+        });
+    })
+    .catch(() => {
+        camSelect.innerHTML = '<option value="0">Camera 0 (default)</option>';
+    });
+
+// ── Load current settings ────────────────────────────────────────
+fetch('/api/settings')
+    .then(r => r.json())
+    .then(data => {
+        if (data.detection) {
+            confSlider.value = data.detection.confidence_threshold || 0.5;
+            confVal.textContent = parseFloat(confSlider.value).toFixed(2);
+            document.getElementById('min-duration').value = data.detection.min_duration || 2.0;
+            document.getElementById('filter-screens').checked = data.detection.filter_screens !== false;
+        }
+        if (data.scare) {
+            volSlider.value = data.scare.volume || 1.0;
+            volVal.textContent = Math.round(volSlider.value * 100) + '%';
+            document.getElementById('cooldown').value = data.scare.cooldown_seconds || 15;
+            document.getElementById('escalation').checked = data.scare.escalation_enabled !== false;
+        }
+        if (data.ai_coach) {
+            document.getElementById('tts-enabled').checked = data.ai_coach.tts_enabled !== false;
+            document.getElementById('ollama-model').value = data.ai_coach.ollama_model || 'llama3';
+        }
+        if (data.hardware) {
+            document.getElementById('serial-enabled').checked = data.hardware.serial_enabled === true;
+            document.getElementById('serial-port').value = data.hardware.serial_port || 'COM3';
+        }
+        if (data.process_monitor) {
+            document.getElementById('pm-enabled').checked = data.process_monitor.enabled !== false;
+            document.getElementById('pm-web').checked  = data.process_monitor.check_web  !== false;
+            document.getElementById('pm-apps').checked = data.process_monitor.check_apps !== false;
+        }
+    });
+
+// ── Save ─────────────────────────────────────────────────────────
+document.getElementById('settings-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const settings = {
+        confidence_threshold: parseFloat(confSlider.value),
+        volume: parseFloat(volSlider.value),
+        cooldown_seconds: parseInt(document.getElementById('cooldown').value),
+        escalation_enabled: document.getElementById('escalation').checked,
+        filter_screens: document.getElementById('filter-screens').checked,
+        camera_index: parseInt(camSelect.value) || 0,
+        pm_enabled:   document.getElementById('pm-enabled').checked,
+        pm_check_web: document.getElementById('pm-web').checked,
+        pm_check_apps: document.getElementById('pm-apps').checked,
+    };
+
+    fetch('/api/settings', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(settings),
+    })
+    .then(r => r.json())
+    .then(data => {
+        const fb = document.getElementById('save-feedback');
+        fb.style.display = 'block';
+        setTimeout(() => fb.style.display = 'none', 3000);
+    });
+});
+</script>
+{% endblock %}
