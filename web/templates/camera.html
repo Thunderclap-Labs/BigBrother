@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}BigBrother — Camera{% endblock %}
+
+{% block content %}
+<div class="camera-page">
+    <h1 class="page-title">Live Camera Feed</h1>
+
+    <div class="camera-container">
+        <img id="camera-feed" src="/api/camera/feed" alt="Camera Feed" class="camera-feed">
+        <div class="camera-overlay" id="camera-overlay">
+            <span class="camera-label" id="detection-label">MONITORING</span>
+        </div>
+    </div>
+
+    <div class="camera-info">
+        <div class="info-row">
+            <span class="info-label">Status:</span>
+            <span class="info-value" id="cam-status">Monitoring</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Confidence:</span>
+            <span class="info-value" id="cam-confidence">—</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">FPS:</span>
+            <span class="info-value" id="cam-fps">~15</span>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">Detection Info</h2>
+        <p class="muted">
+            YOLOv8 detects class 67 (cell phone) from the COCO dataset.
+            Bounding boxes and confidence scores are drawn on the live feed.
+        </p>
+        <p class="muted">
+            Adjust the confidence threshold and cooldown on the
+            <a href="/settings">Settings</a> page.
+        </p>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function updateCameraStatus() {
+    fetch('/api/status')
+        .then(r => r.json())
+        .then(data => {
+            const overlay = document.getElementById('camera-overlay');
+            const label = document.getElementById('detection-label');
+            const status = document.getElementById('cam-status');
+            const conf = document.getElementById('cam-confidence');
+
+            if (data.phone_detected) {
+                overlay.className = 'camera-overlay danger';
+                label.textContent = 'PHONE DETECTED';
+                status.textContent = 'DETECTED';
+                status.style.color = 'var(--red)';
+                conf.textContent = (data.confidence * 100).toFixed(1) + '%';
+            } else {
+                overlay.className = 'camera-overlay';
+                label.textContent = 'MONITORING';
+                status.textContent = 'Clear';
+                status.style.color = 'var(--green)';
+                conf.textContent = '—';
+            }
+        })
+        .catch(err => console.error(err));
+}
+
+setInterval(updateCameraStatus, 2000);
+updateCameraStatus();
+</script>
+{% endblock %}
