@@ -134,3 +134,5 @@ MIT
 - Completed SCRUM-23: WiFi Integration with gun
 
 - Completed SCRUM-24: Phone Integration with ESP32
+
+- Completed SCRUM-84: Asynchronous ESP32 Hardware Calling
