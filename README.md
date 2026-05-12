@@ -138,3 +138,5 @@ MIT
 - Completed SCRUM-84: Asynchronous ESP32 Hardware Calling
 
 - Completed SCRUM-85: AI Prompt Length Optimization
+
+- Completed SCRUM-86: YOLO Detection Debounce (Persistence) Logic
